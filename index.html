@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bounce Loop</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="page">
+      <section class="game-shell" aria-labelledby="game-title">
+        <div class="title-row">
+          <div>
+            <p class="eyebrow">Canvas Browser Game</p>
+            <h1 id="game-title">Bounce Loop</h1>
+          </div>
+          <div class="title-actions">
+            <button id="actionButton" type="button">Start Game</button>
+          </div>
+        </div>
+
+        <canvas
+          id="gameCanvas"
+          width="960"
+          height="540"
+          aria-label="A bouncing ball game with moving obstacle gates"
+        ></canvas>
+
+        <div class="toolbar" aria-label="Game controls">
+          <p id="statusPill" class="status-pill">Ready for launch</p>
+          <div class="toolbar-actions">
+            <button id="pauseButton" class="secondary-button" type="button">Pause</button>
+            <button
+              id="soundButton"
+              class="secondary-button"
+              type="button"
+              aria-pressed="true"
+            >
+              Sound: On
+            </button>
+            <button
+              id="motionButton"
+              class="secondary-button"
+              type="button"
+              aria-pressed="false"
+            >
+              Motion: Full
+            </button>
+          </div>
+        </div>
+
+        <div class="touch-controls" aria-label="Touch controls">
+          <button id="leftButton" class="touch-button" type="button">Left</button>
+          <button id="boostButton" class="touch-button touch-button-accent" type="button">
+            Boost
+          </button>
+          <button id="rightButton" class="touch-button" type="button">Right</button>
+        </div>
+
+        <div class="meta">
+          <p class="summary">
+            Tap, click, or press space to kick the ball upward. Steer with the
+            arrow keys or A and D, or use the touch buttons on mobile. Pause
+            any run, mute sound, reduce motion, and thread the evolving gate
+            patterns for the highest score you can hold.
+          </p>
+
+          <div class="legend" aria-label="Controls">
+            <span><strong>Space / Click</strong> boost upward</span>
+            <span><strong>Left / A</strong> drift left</span>
+            <span><strong>Right / D</strong> drift right</span>
+            <span><strong>P</strong> pause or resume</span>
+            <span><strong>M</strong> toggle sound</span>
+            <span><strong>R</strong> restart after a crash</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="src/player.js"></script>
+    <script src="src/obstacles.js"></script>
+    <script src="src/effects.js"></script>
+    <script src="src/game.js"></script>
+  </body>
+</html>
