@@ -64,6 +64,11 @@
     mode: "ready",
     score: 0,
     bestScore: readNumber(storageKeys.bestScore, 0),
+    lives: 3,
+    checkpoint: 0,
+    checkpointX: 0,
+    checkpointY: 0,
+    checkpointScore: 0,
     flash: 0,
     time: 0,
     shake: 0,
@@ -93,6 +98,11 @@
 
   function resetSession() {
     state.score = 0;
+    state.lives = 3;
+    state.checkpoint = 0;
+    state.checkpointX = 0;
+    state.checkpointY = 0;
+    state.checkpointScore = 0;
     state.flash = 0;
     state.time = 0;
     state.shake = 0;
@@ -113,29 +123,55 @@
     updateButton();
   }
 
-  function endGame() {
-    state.mode = "gameover";
-    state.flash = 1;
-    state.shake = Math.max(state.shake, 1);
-
-    if (!settings.reducedMotion) {
-      particles.emitBurst(player.position.x, player.position.y, {
-        count: 28,
-        speedMin: 120,
-        speedMax: 320,
-        sizeMin: 3,
-        sizeMax: 7,
-        colors: ["#ff8f75", "#ffcc6d", "#edf7fb"]
-      });
-    }
-
-    sound.crash();
-    if (state.score > state.bestScore) {
-      state.bestScore = state.score;
-      state.newBest = true;
-      writeStorage(storageKeys.bestScore, state.bestScore);
-    }
+  function respawnAtCheckpoint() {
+    player.position.x = state.checkpointX;
+    player.position.y = state.checkpointY;
+    player.velocity.x = 145;
+    player.velocity.y = 0;
+    state.score = state.checkpointScore;
+    obstacles.reset();
+    particles.reset();
+    state.mode = "running";
+    state.flash = 0.3;
+    state.shake = 0.12;
+    sound.unlock();
+    performBoost(true);
     updateButton();
+  }
+
+  function loseLife() {
+    if (state.lives > 1) {
+      state.lives -= 1;
+      respawnAtCheckpoint();
+    } else {
+      state.lives = 0;
+      state.mode = "gameover";
+      state.flash = 1;
+      state.shake = Math.max(state.shake, 1);
+
+      if (!settings.reducedMotion) {
+        particles.emitBurst(player.position.x, player.position.y, {
+          count: 28,
+          speedMin: 120,
+          speedMax: 320,
+          sizeMin: 3,
+          sizeMax: 7,
+          colors: ["#ff8f75", "#ffcc6d", "#edf7fb"]
+        });
+      }
+
+      sound.crash();
+      if (state.score > state.bestScore) {
+        state.bestScore = state.score;
+        state.newBest = true;
+        writeStorage(storageKeys.bestScore, state.bestScore);
+      }
+      updateButton();
+    }
+  }
+
+  function endGame() {
+    loseLife();
   }
 
   function performBoost(isStartingRun) {
@@ -303,7 +339,7 @@
       return;
     }
 
-    if (key === "p" && !event.repeat) {
+    if ((key === "p" || key === "escape") && !event.repeat) {
       event.preventDefault();
       togglePause();
       return;
@@ -387,6 +423,14 @@
         entry.scoreValue > 1 ? "#ffcc6d" : "#6ce5ff"
       );
     });
+
+    const currentStage = 1 + Math.floor(state.score / 8);
+    if (currentStage > state.checkpoint) {
+      state.checkpoint = currentStage;
+      state.checkpointX = player.position.x;
+      state.checkpointY = player.position.y;
+      state.checkpointScore = state.score;
+    }
   }
 
   function update(dt) {
@@ -465,22 +509,29 @@
   function drawHud() {
     ctx.save();
     ctx.fillStyle = "rgba(5, 12, 18, 0.68)";
-    ctx.fillRect(18, 18, 234, 78);
+    ctx.fillRect(18, 18, 310, 78);
 
     ctx.strokeStyle = "rgba(108, 229, 255, 0.24)";
-    ctx.strokeRect(18, 18, 234, 78);
+    ctx.strokeRect(18, 18, 310, 78);
 
     ctx.fillStyle = "#a6c4d2";
     ctx.font = "14px 'Segoe UI Variable', 'Trebuchet MS', sans-serif";
     ctx.fillText("Score", 34, 42);
     ctx.fillText("Best", 34, 68);
-    ctx.fillText("Stage", 156, 42);
-    ctx.fillText(String(1 + Math.floor(state.score / 8)), 164, 68);
+    ctx.fillText("Stage", 136, 42);
+    ctx.fillText(String(1 + Math.floor(state.score / 8)), 144, 68);
+    ctx.fillText("Lives", 230, 42);
 
     ctx.fillStyle = "#edf7fb";
     ctx.font = "bold 30px 'Segoe UI Variable', 'Trebuchet MS', sans-serif";
     ctx.fillText(String(state.score), 102, 46);
     ctx.fillText(String(state.bestScore), 102, 72);
+
+    const livesText = state.lives >= 3 ? "♥♥♥" : state.lives === 2 ? "♥♥♡" : state.lives === 1 ? "♥♡♡" : "♡♡♡";
+    ctx.fillStyle = state.lives >= 2 ? "#ff6b8a" : state.lives === 1 ? "#ffcc6d" : "#666";
+    ctx.font = "bold 22px 'Segoe UI Variable', 'Trebuchet MS', sans-serif";
+    ctx.fillText(livesText, 228, 70);
+
     ctx.restore();
   }
 
