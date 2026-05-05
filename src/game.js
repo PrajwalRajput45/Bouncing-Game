@@ -3,7 +3,6 @@
   const ctx = canvas.getContext("2d");
   const actionButton = document.getElementById("actionButton");
   const pauseButton = document.getElementById("pauseButton");
-  const soundButton = document.getElementById("soundButton");
   const motionButton = document.getElementById("motionButton");
   const statusPill = document.getElementById("statusPill");
   const leftButton = document.getElementById("leftButton");
@@ -12,7 +11,6 @@
   const bounds = { width: canvas.width, height: canvas.height };
   const storageKeys = {
     bestScore: "bounce-loop-best-score",
-    soundEnabled: "bounce-loop-sound-enabled",
     reducedMotion: "bounce-loop-reduced-motion"
   };
 
@@ -279,8 +277,6 @@
       pauseButton.disabled = true;
     }
 
-    soundButton.textContent = settings.soundEnabled ? "Sound: On" : "Sound: Off";
-    soundButton.setAttribute("aria-pressed", settings.soundEnabled ? "true" : "false");
     motionButton.textContent = settings.reducedMotion ? "Motion: Reduced" : "Motion: Full";
     motionButton.setAttribute("aria-pressed", settings.reducedMotion ? "true" : "false");
   }
@@ -659,7 +655,6 @@
   canvas.addEventListener("pointerdown", handleAction);
   actionButton.addEventListener("click", handleAction);
   pauseButton.addEventListener("click", togglePause);
-  soundButton.addEventListener("click", toggleSound);
   motionButton.addEventListener("click", toggleReducedMotion);
   boostButton.addEventListener("click", handleAction);
   bindDirectionalButton(leftButton, "left");
