@@ -1,4 +1,5 @@
 # Bounce Loop
+Check The Game ryt Now :- https://prajwalrajput45.github.io/Bouncing-Game/
 
 Bounce Loop is a Canvas API browser game about keeping a glowing ball alive through shifting obstacle patterns. The current build includes escalating difficulty, multiple gate variants, particle feedback, synth audio, pause controls, and mobile touch input.
 
